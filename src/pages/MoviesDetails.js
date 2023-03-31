@@ -1,4 +1,5 @@
 import { fetchMovieDetails } from 'components/services/api';
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import NavLInkInf, { Button, NavDiv } from './moviesDetalis.styled';
@@ -8,20 +9,36 @@ export default function MoviesDetails() {
   const [movie, setMovie] = useState([]);
   const [completed, setCompleted] = useState(false);
   const { movieId } = useParams();
+
   const location = useLocation();
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   fetchMovieDetails(movieId)
+  //     .then(response => {
+  //       setCompleted(true);
+  //       setMovie(response.data);
+  //     })
+  //     .catch(error => {
+  //       setCompleted(false);
+  //       alert('something wrong');
+  //       throw new Error(error.message);
+  //     });
+  // }, [movieId]);
+
   useEffect(() => {
-    fetchMovieDetails(movieId)
-      .then(response => {
+    async function getValue() {
+      try {
+        const arr = await fetchMovieDetails(movieId);
+
         setCompleted(true);
-        setMovie(response.data);
-      })
-      .catch(error => {
+        setMovie(arr.data);
+      } catch (err) {
         setCompleted(false);
         alert('something wrong');
-        throw new Error(error.message);
-      });
+      }
+    }
+    getValue();
   }, [movieId]);
 
   // const releaseYear = movie.slice(0, 4);
@@ -63,8 +80,9 @@ export default function MoviesDetails() {
                 Reviews
               </NavLInkInf>
             </NavDiv>
-
-            <Outlet />
+            <Suspense fallback={<div>Loading...</div>}>
+              <Outlet />
+            </Suspense>
           </>
         )}
       </>
@@ -72,14 +90,14 @@ export default function MoviesDetails() {
   } else {
     return (
       <>
-        <button
+        <Button
           variant="outlined"
           onClick={() => {
             navigate(location?.state?.from ?? '/');
           }}
         >
           Go back
-        </button>
+        </Button>
       </>
     );
   }

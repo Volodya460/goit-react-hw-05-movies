@@ -10,7 +10,6 @@ const Reviews = () => {
     fetchMovieReviews(movieId)
       .then(reviews => {
         setData(reviews.data.results);
-        console.log(reviews.data.results);
       })
       .catch(error => alert(error.message));
   }, [movieId]);

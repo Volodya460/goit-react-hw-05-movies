@@ -24,14 +24,27 @@ const Movies = () => {
     form.reset();
   };
 
-  useEffect(() => {
-    if (filmName === null) return;
+  // useEffect(() => {
+  //   if (filmName === null) return;
 
-    fetchMovieSearch(filmName)
-      .then(results => {
-        setData(results.data.results);
-      })
-      .catch(err => console.log(err));
+  //   fetchMovieSearch(filmName)
+  //     .then(results => {
+  //       setData(results.data.results);
+  //     })
+  //     .catch(err => console.log(err));
+  // }, [filmName]);
+  useEffect(() => {
+    async function getValue() {
+      try {
+        if (filmName === null) return;
+        const results = await fetchMovieSearch(filmName);
+
+        setData(results);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+    getValue();
   }, [filmName]);
 
   return (
